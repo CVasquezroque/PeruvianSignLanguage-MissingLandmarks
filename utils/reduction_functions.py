@@ -679,7 +679,7 @@ def get_consecutive_missing_stats(dataArrs, reduced_dataArrs, classes, handtype,
 
 #     return (num_frames_original, num_frames_reduced), (percentage_removed, max_consec_percentage), num_false_seq
 
-def filter_same_landmarks(h5_path, handtype, left_hand_slice=slice(31, 50), right_hand_slice=slice(51,70), consecutive_trues=None, filtering_videos=True):
+def filter_same_landmarks(h5_path, df_handtype, left_hand_slice=slice(31, 50), right_hand_slice=slice(51,70), consecutive_trues=None, filtering_videos=True):
     """
     Filters the data in an HDF5 file based on whether the frames have the same landmarks on the left and right hands.
 
@@ -711,6 +711,10 @@ def filter_same_landmarks(h5_path, handtype, left_hand_slice=slice(31, 50), righ
     max_consec['Max Percentage'] = []
     num_false_seq = []
     for n, arr in enumerate(arrData):
+        label = videoName[n].split('/')[1].split('_')[0] #Get the label of the video
+        hand_id = df_handtype.get(label, {}).get('HID', 'B') #Default to 'B' if not found
+        handtype = {'R': 'right', 'L': 'left', 'B': 'both'}.get(hand_id, 'both') 
+
         x_arr, y_arr = np.split(arr, 2, axis=1)
         all_same_landmarks = get_missing_landmarks(x_arr,left_hand_slice,right_hand_slice,hand_type=handtype)
         num_consec = (len(all_same_landmarks)//4 )*2 +1
