@@ -141,7 +141,7 @@ class DataFilter:
         print(f'Number of classes before reduction: {len(self.original_classes)}')
         print(f'Number of videos before reduction: {len(self.original_videoNames)}')
 
-        self.reduced_classes, self.reduced_videoNames, self.reduced_dataArrs, self.baseline_dataArrs = filter_same_landmarks(self.data_loader.h5_path, handtype= self.handtypes,left_hand_slice=LEFT_HAND_SLICE, right_hand_slice=RIGHT_HAND_SLICE)
+        self.reduced_classes, self.reduced_videoNames, self.reduced_dataArrs, self.baseline_dataArrs = filter_same_landmarks(self.data_loader.h5_path, df_handtype= self.handtypes,left_hand_slice=LEFT_HAND_SLICE, right_hand_slice=RIGHT_HAND_SLICE)
         print(f'Number of classes after reduction: {len(self.reduced_classes)}')
         print(f'Number of videos after reduction: {len(self.reduced_videoNames)}')
 
@@ -153,9 +153,10 @@ class DataFilter:
         self.num_frames_reduced = [len(arr) for arr in self.reduced_dataArrs]
 
         self.percentage_removed, self.max_consec_percentage,self.max_consec_values, self.num_false_seq = get_consecutive_missing_stats(self.filtered_dataArrs, 
-                                                                                        self.reduced_filtered_dataArrs, 
+                                                                                        self.reduced_filtered_dataArrs,
+                                                                                        self.filtered_videoNames, 
                                                                                         self.filtered_classes,
-                                                                                        handtype= self.handtypes,
+                                                                                        df_handtype= self.handtypes,
                                                                                         left_hand_slice=LEFT_HAND_SLICE,
                                                                                         right_hand_slice=RIGHT_HAND_SLICE
                                                                                     )

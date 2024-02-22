@@ -566,7 +566,7 @@ def filter_data(dataArrs, videoName, classes, min_instances=None, top_k_classes=
 
 
 
-def get_consecutive_missing_stats(dataArrs, reduced_dataArrs, classes, handtype, left_hand_slice=slice(31, 50), right_hand_slice=slice(51,70)):
+def get_consecutive_missing_stats(dataArrs, reduced_dataArrs, videoName, classes, df_handtype, left_hand_slice=slice(31, 50), right_hand_slice=slice(51,70)):
     """
     Calculates statistics related to consecutive missing frames and percentage reductions based on the given original and reduced data arrays.
 
@@ -603,6 +603,21 @@ def get_consecutive_missing_stats(dataArrs, reduced_dataArrs, classes, handtype,
 
     for n, (original_arr, reduced_arr, cls) in enumerate(zip(dataArrs, reduced_dataArrs, classes)):
         if cls in valid_classes:
+            if df_handtype is not None:
+                label = videoName[n].split('/')[1].split('_')[0]  # Extract label from videoName and convert to integer
+                print(label)
+                if label in df_handtype['label']:
+                    index = df_handtype['label'].index(label)
+                    hand_id = df_handtype['HID'][index]
+                else:
+                    hand_id = 'B'  # Default to 'B' if label not found
+
+                handtype = {'R': 'right', 'L': 'left', 'B': 'both'}.get(hand_id, 'both')
+            else:
+                handtype = 'both'
+        
+            print(handtype,type(handtype))
+            
             x_arr, y_arr = np.split(original_arr, 2, axis=1)
             all_same_landmarks = get_missing_landmarks(x_arr, left_hand_slice, right_hand_slice,hand_type=handtype)
             
@@ -711,15 +726,20 @@ def filter_same_landmarks(h5_path, df_handtype, left_hand_slice=slice(31, 50), r
     max_consec['Max Percentage'] = []
     num_false_seq = []
     for n, arr in enumerate(arrData):
-        label = int(videoName[n].split('/')[1].split('_')[0])  # Extract label from videoName and convert to integer
-        if label in df_handtype['label']:
-            index = df_handtype['label'].index(label)
-            hand_id = df_handtype['HID'][index]
+        if df_handtype is not None:
+            label = videoName[n].split('/')[1].split('_')[0]  # Extract label from videoName and convert to integer
+            print(label)
+            if label in df_handtype['label']:
+                index = df_handtype['label'].index(label)
+                hand_id = df_handtype['HID'][index]
+            else:
+                hand_id = 'B'  # Default to 'B' if label not found
+
+            handtype = {'R': 'right', 'L': 'left', 'B': 'both'}.get(hand_id, 'both')
         else:
-            hand_id = 'B'  # Default to 'B' if label not found
-
-        handtype = {'R': 'right', 'L': 'left', 'B': 'both'}.get(hand_id, 'both')
-
+            handtype = 'both'
+        
+        print(handtype,type(handtype))
         x_arr, y_arr = np.split(arr, 2, axis=1)
         all_same_landmarks = get_missing_landmarks(x_arr,left_hand_slice,right_hand_slice,hand_type=handtype)
         num_consec = (len(all_same_landmarks)//4 )*2 +1
