@@ -38,6 +38,7 @@ args = parser.parse_args()
 csv_filename = args.csv_filename
 DATASET = args.dataset
 KPMODEL = "mediapipe"
+k_down = 6
 
 if args.reduced:
     SUBSET = "Reduced"
@@ -52,7 +53,7 @@ else:
 if SUBSET == "Reduced":
     h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}_reduced--mediapipe.hdf5')
 elif SUBSET == "Downsampled":
-    h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}_downsampled--mediapipe.hdf5')
+    h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}_downsampled_by_{k_down}--mediapipe.hdf5')
 else:
     h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe.hdf5')
 print(f"Reading HDF5 file from {h5_filepath}...")
@@ -135,9 +136,15 @@ elif DATASET == "AUTSL":
 
     with h5py.File(h5_filepath, "r") as ori_h5_file:
         # Create new HDF5 files for train and validation sets
-        train_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Train.hdf5')
-        val_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Val.hdf5')
-
+        # train_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Train.hdf5')
+        # val_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Val.hdf5')
+        
+        if SUBSET == "Downsampled":
+            train_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}_downsampled_by_{k_down}--mediapipe--Train.hdf5')
+            val_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}_downsampled_by_{k_down}--mediapipe--Val.hdf5')
+        else:
+            train_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Train.hdf5')
+            val_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Val.hdf5') 
         train_h5_file = h5py.File(train_h5_filepath, "w")
         val_h5_file = h5py.File(val_h5_filepath, "w")
 
@@ -173,9 +180,13 @@ elif DATASET == "LSA64":
     
     with h5py.File(h5_filepath, "r") as ori_h5_file:
         # Create new HDF5 files for train and validation sets
-        train_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Train.hdf5')
-        val_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Val.hdf5')
-        
+        if SUBSET == "Downsampled":
+            train_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}_downsampled_by_{k_down}--mediapipe--Train.hdf5')
+            val_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}_downsampled_by_{k_down}--mediapipe--Val.hdf5')
+        else:
+            train_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Train.hdf5')
+            val_h5_filepath = os.path.join(args.folder, f'{args.dataset}/Data/H5/{SUBSET}/{args.dataset}--mediapipe--Val.hdf5') 
+              
         train_h5_file = h5py.File(train_h5_filepath, "w")
         val_h5_file = h5py.File(val_h5_filepath, "w")
 

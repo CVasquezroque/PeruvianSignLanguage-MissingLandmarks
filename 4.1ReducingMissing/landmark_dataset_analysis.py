@@ -57,7 +57,7 @@ class DataDownsampler:
     
     def downsample(self):
         self.original_classes, self.original_videoNames, self.original_dataArrs = read_h5_indexes(self.data_loader.h5_path)
-        self.downsampled_classes, self.downsampled_videoNames, self.downsampled_dataArrs, self.k_downsample = downsampling(self.original_classes, self.original_videoNames, self.original_dataArrs, k=2)
+        self.downsampled_classes, self.downsampled_videoNames, self.downsampled_dataArrs, self.k_downsample = downsampling(self.original_classes, self.original_videoNames, self.original_dataArrs, k=4)
         
         self.filtered_dataArrs, self.filtered_videoNames, self.filtered_classes, self.valid_classes, self.valid_classes_total = self.selection(self.data_loader.dataset, self.original_dataArrs, self.original_videoNames, self.original_classes)
         self.filtered_downsampled_dataArrs, self.filtered_downsampled_videoNames, self.filtered_downsampled_classes, self.valid_downsampled_classes, self.valid_downsampled_classes_total = self.selection(self.data_loader.dataset, self.downsampled_dataArrs, self.downsampled_videoNames, self.downsampled_classes)
