@@ -33,8 +33,8 @@ def read_hdf5_data(file_path, min_instances=None, top_k_classes=None, banned_cla
 
 # Define the file path
 k = 6
-file_path = "../../Datasets/LSA64/Data/H5/Downsampled"
-dataset = f"LSA64_downsampled_by_{k}"
+file_path = "../../Datasets/LSA64/Data/H5/Reduced"
+dataset = f"LSA64"
 file_path_val = os.path.join(file_path, f"{dataset}--mediapipe--Val.hdf5")
 file_path_train = os.path.join(file_path, f"{dataset}--mediapipe--Train.hdf5")
 # Define banned classes, if any

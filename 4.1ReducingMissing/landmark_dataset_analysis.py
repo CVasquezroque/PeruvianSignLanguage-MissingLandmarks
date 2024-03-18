@@ -30,7 +30,12 @@ class DataLoader:
         self.folder = args.folder
         self.train = args.train
         self.val = args.val
-        
+        self.k_value = args.k_value
+        self.conference = args.conference
+        conference_path = '../../' + self.conference + '/Figures'
+        if not os.path.exists(conference_path):
+            os.makedirs(conference_path)
+
         self.kpmodel = args.kpmodel
         self.h5_path = self.set_h5_path()
         self.classes, self.videoName, self.dataArrs = read_h5_indexes(self.h5_path)
@@ -54,10 +59,11 @@ class DataDownsampler:
         self.train = data_loader.train
         self.val = data_loader.val
         self.bann = self.get_bann_values(self.data_loader.dataset)
+        self.k_value = data_loader.k_value
     
     def downsample(self):
         self.original_classes, self.original_videoNames, self.original_dataArrs = read_h5_indexes(self.data_loader.h5_path)
-        self.downsampled_classes, self.downsampled_videoNames, self.downsampled_dataArrs, self.k_downsample = downsampling(self.original_classes, self.original_videoNames, self.original_dataArrs, k=4)
+        self.downsampled_classes, self.downsampled_videoNames, self.downsampled_dataArrs, self.k_downsample = downsampling(self.original_classes, self.original_videoNames, self.original_dataArrs, k=self.k_value)
         
         self.filtered_dataArrs, self.filtered_videoNames, self.filtered_classes, self.valid_classes, self.valid_classes_total = self.selection(self.data_loader.dataset, self.original_dataArrs, self.original_videoNames, self.original_classes)
         self.filtered_downsampled_dataArrs, self.filtered_downsampled_videoNames, self.filtered_downsampled_classes, self.valid_downsampled_classes, self.valid_downsampled_classes_total = self.selection(self.data_loader.dataset, self.downsampled_dataArrs, self.downsampled_videoNames, self.downsampled_classes)
@@ -402,6 +408,7 @@ class DataVisualizer:
         self.data_filter = datafilter
         self.logger = logger
         self.dataset = self.data_loader.dataset
+        self.conference = self.data_loader.conference
         self.train = self.data_loader.train
         self.val = self.data_loader.val
         self.filtered_classes = self.data_filter.filtered_classes
@@ -453,15 +460,15 @@ class DataVisualizer:
     def save_plots(self):
         plt.tight_layout()
         if self.val and not self.train:
-            plt.savefig(f'../../LREC2024/Figures/{self.dataset}_stats--val.png', dpi=300)
-            plt.savefig(f'../../LREC2024/Figures/{self.dataset}_stats--val.svg', dpi=300)
+            plt.savefig(f'../../{self.conference}/Figures/{self.dataset}_stats--val.png', dpi=300)
+            plt.savefig(f'../../{self.conference}/Figures/{self.dataset}_stats--val.svg', dpi=300)
         elif self.train and not self.val:
-            plt.savefig(f'../../LREC2024/Figures/{self.dataset}_stats--train.png', dpi=300)
-            plt.savefig(f'../../LREC2024/Figures/{self.dataset}_stats--train.svg', dpi=300)
+            plt.savefig(f'../../{self.conference}/Figures/{self.dataset}_stats--train.png', dpi=300)
+            plt.savefig(f'../../{self.conference}/Figures/{self.dataset}_stats--train.svg', dpi=300)
         else:
-            plt.savefig(f'../../LREC2024/Figures/{self.dataset}_stats.png', dpi=300)
-            plt.savefig(f'../../LREC2024/Figures/{self.dataset}_stats.svg', dpi=300)
-        plot_length_distribution(self.num_frames_original, self.num_frames_reduced, f'../../LREC2024/Figures/{self.dataset}_length_distribution.png')
+            plt.savefig(f'../../{self.conference}/Figures/{self.dataset}_stats.png', dpi=300)
+            plt.savefig(f'../../{self.conference}/Figures/{self.dataset}_stats.svg', dpi=300)
+        plot_length_distribution(self.num_frames_original, self.num_frames_reduced, f'../../{self.conference}/Figures/{self.dataset}_length_distribution.png')
 
     def kruskal_wallis(self):
         # Perform Kruskal-Wallis test for each group
@@ -545,6 +552,8 @@ if __name__ == "__main__":
     parser.add_argument('--e', action='store_true', help='Export classes and videonames without missing values')
     parser.add_argument('--monitoring', action='store_true', help='Monitoring Flag')
     parser.add_argument('--csv_meaning', action='store_true', help='CSV Meaning Flag')
+    parser.add_argument('--conference', type=str, help='Conference name', default='LREC2024')
+    parser.add_argument('--k_value', type=int, default=2, help='Downsampling factor')
     args = parser.parse_args()
     main(args)
 # class DatasetAnalyzer:
